@@ -1,0 +1,92 @@
+{
+    "station_Detail" :[
+        {
+            "Station_Name": "OP090",
+            "Station_IPadd": "10.110.50.207",
+            "Tag_Name": 
+                {
+                  
+                    "Light_Curtain": ["Sta90A_90B_Saf.LC1.Blocked", "Sta90A_90B_Saf.LC2.Blocked"],
+                    "Swipe_Button": ["Program:Sta90A_90B.Station.Status.Cycle_Start_PB" ], 
+                    "Robot_Auto": ["Sta90_R1.In_Auto", "Sta90_R2.In_Auto"],
+                    "Robot_Running": ["Sta90_R1.I.do03", "Sta90_R2.I.do03"], 
+                    "Safety_Gate": ["Zone01_Saf.All_Gate_Doors_Closed"]
+                
+                }
+        },
+        {
+            "Station_Name": "JLLONG",
+            "Station_IPadd": "10.10.16.132",
+            "Tag_Name": 
+                {
+                    "One_Part_Trigger":["ZONE2_PRODUCTION.Trigger"],
+                    "Production_Counter": ["ZONE2_PRODUCTION.ShiftCounter.ACC"],
+                    "Production_Hourly_Counter": ["ZONE2_PRODUCTION.HourCounter.ACC"]
+                }
+        },
+        {
+            "Station_Name": "OP100",
+            "Station_IPadd": "10.110.50.201",
+            "Tag_Name": 
+                {
+                  
+                    "Light_Curtain": ["Sta100_Saf.LC1.Blocked", "Sta100_Saf.LC2.Blocked"],
+                    "Swipe_Button": ["Program:Sta100.Station.Status.Cycle_Start_PB" ], 
+                    "Robot_Auto": ["Sta100_R1.In_Auto", "Sta100_R2.In_Auto","Sta100_MH.In_Auto"],
+                    "Robot_Running": ["Sta100_R1.I.do03", "Sta100_R2.I.do03", "Sta100_MH.I.do03"], 
+                    "Safety_Gate": ["Sta120_Safety_Gate.Closed", "Sta200_Safety_Gate.Closed"]
+                
+                }
+        },
+        {
+            "Station_Name": "OP120",
+            "Station_IPadd": "10.110.50.201",
+            "Tag_Name": 
+                {
+                  
+                    "Light_Curtain": ["Sta120_Saf.LC1.Blocked", "Sta120_Saf.LC2.Blocked"],
+                    "Swipe_Button": ["Program:Sta120.Station.Status.Cycle_Start_PB" ], 
+                    "Robot_Auto": ["Sta120_R1.In_Auto", "Sta120_R2.In_Auto","Sta120_MH.In_Auto"],
+                    "Robot_Running": ["Sta120_R1.I.do03", "Sta120_R2.I.do03", "Sta120_MH.I.do03"], 
+                    "Safety_Gate": ["Sta120_Safety_Gate.Closed", "Sta200_Safety_Gate.Closed"]
+                
+                }
+        },
+        {
+            "Station_Name": "OP010",
+            "Station_IPadd": "10.110.50.205", 
+            "Tag_Name": 
+                {
+                    "Light_Curtain": ["Sta10_Saf.LC_ALL_Cleared"],
+                    "Swipe_Button": ["Program:Sta90A_90B.Station.Status.Cycle_Start_PB"] , 
+                    "Robot_Auto": ["Sta90_R1.In_Auto", "Sta90_R2.In_Auto"],
+                    "Robot_Running": ["Sta90_R1.I.do03", "Sta90_R2.I.do03"],
+                    "Safety_Gate": ["Zone01_Saf.All_Gate_Doors_Closed"]
+                }
+        },
+        {
+        "Station_Name": "OP030",
+        "Station_IPadd": "10.110.50.205", 
+        "Tag_Name": 
+            {
+                "Light_Curtain": ["Sta10_Saf.LC_ALL_Cleared"],
+                "Swipe_Button": ["Program:Sta90A_90B.Station.Status.Cycle_Start_PB"] , 
+                "Robot_Auto": ["Sta90_R1.In_Auto", "Sta90_R2.In_Auto"],
+                "Robot_Running": ["Sta90_R1.I.do03", "Sta90_R2.I.do03"],
+                "Safety_Gate": ["Zone01_Saf.All_Gate_Doors_Closed"]
+            }
+        },
+        {
+            "Station_Name": "FR120",
+            "Station_IPadd": "10.10.14.12", 
+            "Tag_Name": 
+                {
+                    "Light_Curtain": ["FR120_OPER1.SAFETY_CLEAR"],
+                    "Swipe_Button": ["FR120_SAFETY_OPER.CYCLE_START"] , 
+                    "Robot_Auto": ["FR120R1_SAFETY_TEACH_MODE_NA"],
+                    "Robot_Running": ["FR120_R1.DO._03", "FR120_R2.DO._03", "FR120_R3.DO._03", "FR120_R4.DO._03", "FR120_MH1.DO._03"],
+                    "Safety_Gate": ["FR120_SAFETY_GATE.GATE.O1"]
+                }
+        }
+]
+}

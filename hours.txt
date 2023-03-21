@@ -1,0 +1,25 @@
+END OF TESTING. Results for 2023-03-07: 
+
+Time in Operation: 846 min 
+Not Scheduled time: 0 min 
+Time for quick fixes: 0 min 
+Time in Maintnance: 0 min 
+Time in confusion: 66 min
+
+
+END OF TESTING. Results for 2023-03-09 On station: FR120: 
+
+Time in Operation: 816 min 
+Not Scheduled time: 0 min 
+Time for quick fixes: 0 min 
+Time in Maintnance: 0 min 
+Time in confusion: 90 min 
+
+END OF TESTING. Results for 2023-03-09 On station: FR120: 
+
+Time in Operation: 66 min 
+Not Scheduled time: 0 min 
+Time for quick fixes: 0 min 
+Time in Maintnance: 0 min 
+Time in confusion: 24 min 
+
