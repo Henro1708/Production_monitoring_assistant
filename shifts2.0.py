@@ -17,7 +17,7 @@ import psycopg2
 # FUNCTIONSSSSS 
 
 #Import table
-filename = 'table_shifts.xlsx'
+filename = 'table_shiftsJLLong.xlsx'
 df = pd.read_excel(filename)
 
 #STARTS station     
