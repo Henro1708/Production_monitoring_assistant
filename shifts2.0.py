@@ -160,7 +160,8 @@ def databaseUpdate(IP,shift,prevTime):
 
 while True:                         # BEGINNING OF SHIFT ## BEGINNING OF SHIFT ## BEGINNING OF SHIFT ## BEGINNING OF SHIFT #
     CYCLETIME = float(df.iat[1,14])  # sec/part decided on the excel file 
-
+    resAfterAnHour = False
+    happenedInFirst = False
 
      
 
@@ -321,13 +322,13 @@ while True:                         # BEGINNING OF SHIFT ## BEGINNING OF SHIFT #
 
     # create message object instance
     msg = MIMEMultipart()
-
+    to_list = ["shubham.savani@martinrea.com", "henrique.rodriques@martinrea.com", "brian.rankin@martinrea.com"]
     # setup the parameters of the message
-    password = "hiqrzmqfjltittct"
+    password = "hiqrzmqfjltittct"   # VERY SECURE
     msg['From'] = "shiftreportshydroform@gmail.com"
-    msg['To'] = "henriqueengelke@gmail.com"
+    msg['To'] = ",".join(to_list)
     msg['Subject'] = "Shift Report"
-    msg['Cc'] = 'shubham.savani@martinrea.com'
+    #msg['Cc'] = 'shubham.savani@martinrea.com'
 
     # add in the message body
     msg.attach(MIMEText("Here is the shift report for: "+ shift +' of ' + datetime.today().strftime('%Y-%m-%d') + " :"))
@@ -348,7 +349,7 @@ while True:                         # BEGINNING OF SHIFT ## BEGINNING OF SHIFT #
     server.login(msg['From'], password)
 
     # send the message via the server.
-    server.sendmail(msg['From'], msg['To'], msg.as_string())
+    server.sendmail(msg['From'], to_list, msg.as_string())
 
     # terminate the SMTP session
     server.quit()

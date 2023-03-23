@@ -1,58 +1,43 @@
-import psycopg2
 import time
+from datetime import datetime
+from pylogix import PLC
+from plc import station
+import json
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
+import pandas as pd
+import numpy as np
+from openpyxl.styles import Font, Color, PatternFill
+from openpyxl.utils import get_column_letter
+from openpyxl import Workbook
+import psycopg2
 
+shift="testing"
 
-#Initialization for database
-hostname = 'localhost'
-database = 'scheduler_times'
-username = 'postgres'
-pwd = 'W1nter@2023Hydro' #Very safe, isn`t it lol
-port_id = 5432
+msg = MIMEMultipart()
+to_list = ["henriqueengelke@gmail.com", "henrique.rodriques@martinrea.com"]
+    # setup the parameters of the message
+password = "hiqrzmqfjltittct"   # VERY SECURE
+msg['From'] = "shiftreportshydroform@gmail.com"
+msg['To'] =  ",".join(to_list)
+msg['Subject'] = "Shift Report"
+msg['Cc'] = 'henriqueengelke@gmail.com'
 
+msg.attach(MIMEText("Here is the shift report for: "+ shift +' of ' + datetime.today().strftime('%Y-%m-%d') + " :"))
 
-def getPrevTime():
-    #create connection to database
-    conn = psycopg2.connect(
-    host = hostname,
-    dbname = database,
-    user = username,
-    password = pwd,
-    port=port_id)
-    cur = conn.cursor() #opens cursor (database stuff using psycopg2)
-        
-    execute="SELECT epoch_time FROM scheduler_times_testing ORDER BY epoch_time DESC LIMIT 1;"
+server = smtplib.SMTP('smtp.gmail.com', 587)
 
-    cur.execute(execute) #executes the thing (idk I copied this from a tutorial and it works)
-    result = cur.fetchone()
-    print("data fetched")
-    cur.close()
-    conn.close() #finished database updates
-    if result == None:
-        return time.time()
-    else:
-        return result[0]
+    # start TLS for security
+server.starttls()
 
-def databaseUpdate(IP,shift,prevTime):
-   #create connection to database
-    conn = psycopg2.connect(
-    host = hostname,
-    dbname = database,
-    user = username,
-    password = pwd,
-    port=port_id)
-    timeEpoch = time.time()
-    cur = conn.cursor() #opens cursor (database stuff using psycopg2)
+    # Login
+server.login(msg['From'], password)
 
-                #SQL code \/
-    insert_script = 'INSERT INTO scheduler_times_testing(ip_address, epoch_time, time_diff ,shift) VALUES(%s, %s, %s,%s)'
-    insert_values = (IP, timeEpoch, timeEpoch-prevTime ,shift)
+    # send the message via the server.
+server.sendmail(msg['From'], to_list, msg.as_string())
 
-
-    cur.execute(insert_script, insert_values) #executes the thing (idk I copied this from a tutorial and it works)
-    conn.commit()
-    print("Database updated")
-    cur.close()
-    conn.close() #finished database updates
-
-databaseUpdate(1234,'neveraaa a', getPrevTime())
+    # terminate the SMTP session
+server.quit()
 
