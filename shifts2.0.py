@@ -185,7 +185,7 @@ while True:                         # BEGINNING OF SHIFT ## BEGINNING OF SHIFT #
     shift, endTime = whichShift(int(nowTime))  #finds out which shift it is
     happenedInFirst = firstHour()
     if happenedInFirst == True:   # Tests for the first hour (anytime in the first hour counts as a full hour)
-        shiftLength = (7.33 * sInAnHour)   # 8h - break times
+        shiftLength = (7.5 * sInAnHour)   # 8h - break times
         # lastCycle = getPrevTime()
         # databaseUpdate(JLLongIpAdd,shift,lastCycle)
 
