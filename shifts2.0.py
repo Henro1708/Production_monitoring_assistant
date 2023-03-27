@@ -105,53 +105,53 @@ def inFirstHour(hour):  # True when we are at the beginning of a shift
     else: 
         return False              
 
-def getPrevTime():
-    #create connection to database
-    conn = psycopg2.connect(
-    host = hostname,
-    dbname = database,
-    user = username,
-    password = pwd,
-    port=port_id)
-    cur = conn.cursor() #opens cursor (database stuff using psycopg2)
+# def getPrevTime():
+#     #create connection to database
+#     conn = psycopg2.connect(
+#     host = hostname,
+#     dbname = database,
+#     user = username,
+#     password = pwd,
+#     port=port_id)
+#     cur = conn.cursor() #opens cursor (database stuff using psycopg2)
         
-    execute="SELECT epoch_time FROM scheduler_times_table WHERE ip_address='10.10.16.132' ORDER BY epoch_time DESC LIMIT 1;"
+#     execute="SELECT epoch_time FROM scheduler_times_table WHERE ip_address='10.10.16.132' ORDER BY epoch_time DESC LIMIT 1;"
 
-    cur.execute(execute) #executes the thing (idk I copied this from a tutorial and it works)
-    result = cur.fetchone()
-    #print("data fetched")
-    cur.close()
-    conn.close() #finished database updates
-    if result == None:
-        return time.time()
-    else:
-        return result[0]
-
-
-
-def databaseUpdate(IP,shift,prevTime):
-   #create connection to database
-    conn = psycopg2.connect(
-    host = hostname,
-    dbname = database,
-    user = username,
-    password = pwd,
-    port=port_id)
-
-    timeEpoch = time.time()
-    cur = conn.cursor() #opens cursor (database stuff using psycopg2)
-
-                #SQL code \/
-    insert_script = 'INSERT INTO scheduler_times_table(ip_address, epoch_time, time_diff ,shift) VALUES(%s, %s, %s,%s)'
-    insert_values = (IP, timeEpoch, timeEpoch-prevTime ,shift)
+#     cur.execute(execute) #executes the thing (idk I copied this from a tutorial and it works)
+#     result = cur.fetchone()
+#     #print("data fetched")
+#     cur.close()
+#     conn.close() #finished database updates
+#     if result == None:
+#         return time.time()
+#     else:
+#         return result[0]
 
 
-    cur.execute(insert_script, insert_values) #executes the thing (idk I copied this from a tutorial and it works)
-    conn.commit()
-    #print("Database updated")
-    cur.close()
-    conn.close() #finished database updates
-    return timeEpoch
+
+# def databaseUpdate(IP,shift,prevTime):
+#    #create connection to database
+#     conn = psycopg2.connect(
+#     host = hostname,
+#     dbname = database,
+#     user = username,
+#     password = pwd,
+#     port=port_id)
+
+#     timeEpoch = time.time()
+#     cur = conn.cursor() #opens cursor (database stuff using psycopg2)
+
+#                 #SQL code \/
+#     insert_script = 'INSERT INTO scheduler_times_table(ip_address, epoch_time, time_diff ,shift) VALUES(%s, %s, %s,%s)'
+#     insert_values = (IP, timeEpoch, timeEpoch-prevTime ,shift)
+
+
+#     cur.execute(insert_script, insert_values) #executes the thing (idk I copied this from a tutorial and it works)
+#     conn.commit()
+#     #print("Database updated")
+#     cur.close()
+#     conn.close() #finished database updates
+#     return timeEpoch
     
 # MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ####
 
@@ -186,15 +186,15 @@ while True:                         # BEGINNING OF SHIFT ## BEGINNING OF SHIFT #
     happenedInFirst = firstHour()
     if happenedInFirst == True:   # Tests for the first hour (anytime in the first hour counts as a full hour)
         shiftLength = (7.33 * sInAnHour)   # 8h - break times
-        lastCycle = getPrevTime()
-        databaseUpdate(JLLongIpAdd,shift,lastCycle)
+        # lastCycle = getPrevTime()
+        # databaseUpdate(JLLongIpAdd,shift,lastCycle)
 
     else:
         resAfterAnHour,timeUsed = afterAnHour()   #if not in first hour, checks for the next ones
         if resAfterAnHour == True:
             shiftLength = (6.33*sInAnHour) - timeUsed
-            lastCycle = getPrevTime()
-            databaseUpdate(JLLongIpAdd,shift,lastCycle)
+            # lastCycle = getPrevTime()
+            # databaseUpdate(JLLongIpAdd,shift,lastCycle)
         else:
             shiftLength = 0 #DID NOT RUN
 
@@ -207,8 +207,8 @@ while True:                         # BEGINNING OF SHIFT ## BEGINNING OF SHIFT #
         pMde, timePerPart = checkPart() #calls function to check parts
         
         if pMde == True: #If a part is made, we check if it was over the cycletime and by how much
-            lastCycle = getPrevTime()   # gets the last time a part was made for the calculations
-            databaseUpdate(JLLongIpAdd,shift,lastCycle) # saves the timestamp on a database
+            # lastCycle = getPrevTime()   # gets the last time a part was made for the calculations
+            # databaseUpdate(JLLongIpAdd,shift,lastCycle) # saves the timestamp on a database
             if timePerPart > CYCLETIME:
                 if timePerPart - CYCLETIME > fiveMin*2: # over 10 min = major
                     print("Major problem at: "+ str(now))
@@ -246,9 +246,13 @@ while True:                         # BEGINNING OF SHIFT ## BEGINNING OF SHIFT #
     for i in range(0, len(majorBucket)):    
         timeMajor = timeMajor + majorBucket[i]
 
-    if resAfterAnHour or happenedInFirst == True:
-        timeMajor -= 1800 # removes 30 min from major because of the breaks they take
+    if nOfMajor == 1:
+        nOfMajor -=1
+    if nOfMajor >=2:
         nOfMajor -=2
+    if timeMajor >= 1800:
+        timeMajor -= 1800 # removes 30 min from major because of the breaks they take
+        
 
 
     # WRITING IN EXCEL ## WRITING IN EXCEL ## WRITING IN EXCEL ## WRITING IN EXCEL #
@@ -266,17 +270,17 @@ while True:                         # BEGINNING OF SHIFT ## BEGINNING OF SHIFT #
     df.at[i, 'ID'] = i
     df.at[i, 'Date'] = datetime.today().strftime('%Y-%m-%d')
     df.at[i, 'Shift'] = shift
-    df.at[i, 'Hours Worked'] = round(shiftLength/3600,2) # The original value was in seconds, so we transfer it into hours
-    df.at[i, 'Hours Earned'] = round(time_awarded/3600,2)
-    df.at[i, 'Hours Difference'] = round(timeDiff/3600,2)
+    df.at[i, 'Hours Worked'] = round(shiftLength/3600,3) # The original value was in seconds, so we transfer it into hours
+    df.at[i, 'Hours Earned'] = round(time_awarded/3600,3)
+    df.at[i, 'Hours Difference'] = round(timeDiff/3600,3)
     df.at[i, 'Parts Made'] = nOfParts
     df.at[i, 'Parts Expected'] = expectedNOfParts
     df.at[i, 'Micro Errors'] = nofMicro
     df.at[i, 'Minor Errors'] = nOfMinor
     df.at[i, 'Major Errors'] = nOfMajor #Counting for the 2 breaks the workers take
-    df.at[i, 'Major Time'] = round((timeMajor/3600),2)  # taking the times as breaks out (hardcoded I know, but well...)
-    df.at[i, 'Micro Time'] = round(timeMicro/3600,2)
-    df.at[i, 'Minor Time'] = round(timeMinor/3600,2)
+    df.at[i, 'Major Time'] = round((timeMajor/3600),3)  # taking the times as breaks out (hardcoded I know, but well...)
+    df.at[i, 'Micro Time'] = round(timeMicro/3600,3)
+    df.at[i, 'Minor Time'] = round(timeMinor/3600,3)
     
 
 
