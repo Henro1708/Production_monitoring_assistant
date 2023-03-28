@@ -51,11 +51,12 @@ def afterAnHour(): # checks the time a part takes to be made after the first hou
     t1 = time.time()
     t2 = time.time()
     while JLLong.onePart()[0][3] != 1: #PLC tells when part is made
-        t2 = time.time()
+        
         timeNow = datetime.now()
         if timeNow.strftime("%H:%M") ==endTime:
             return False,0
-        time.sleep(0.05)  #This might need to be removed
+        breakTime(timeNow.strftime("%H:%M"))
+        t2 = time.time()
     print("First part made! (Not first hour)")
     return True, (t2-t1)
 
@@ -74,6 +75,7 @@ def checkPart():    # main function that checks when a part is made and how long
 
             print(str(JLLong.prodCounter()[0][3]) + " parts on this shift")
             return True, t2-t
+        breakTime(timeNow.strftime("%H:%M"))
         t2 = time.time()
         timeNow = datetime.now()
     return False, 0
@@ -83,13 +85,13 @@ def whichShift(time):       # Tells which shift we are in and when it will end
     
     if time >= 7 and time < 15:
         print("day shift")
-        return "day" , "14:59"     
+        return "day" , "14:59" , '09:30', '12:30'    
     elif time >= 15 and time < 23:
         print("afternoon shift")                    
-        return "afternoon", "22:59"
+        return "afternoon", "22:59" , '17:30' , "20:30"
     elif time  >= 23 or time < 7:
         print("night shift")
-        return "night" , "06:59"
+        return "night" , "06:59" , "01:45" , '04:45'
     else:
         print("Mid of shift")
         return "none" , "0"
@@ -103,7 +105,17 @@ def inFirstHour(hour):  # True when we are at the beginning of a shift
     elif int(hour) == 23:
         return True
     else: 
-        return False              
+        return False      
+
+def breakTime(time):
+    if time == breakPeriod:
+        time.sleep(10*60)
+        return True
+    if time == lunchTime:
+        time.sleep(20*60)
+        return True
+    else:
+        return False
 
 # def getPrevTime():
 #     #create connection to database
@@ -182,7 +194,7 @@ while True:                         # BEGINNING OF SHIFT ## BEGINNING OF SHIFT #
         nowTime = now.strftime("%H")
     print("in shift")
 
-    shift, endTime = whichShift(int(nowTime))  #finds out which shift it is
+    shift, endTime , breakPeriod, lunchTime  = whichShift(int(nowTime))  #finds out which shift it is
     happenedInFirst = firstHour()
     if happenedInFirst == True:   # Tests for the first hour (anytime in the first hour counts as a full hour)
         shiftLength = (7.5 * sInAnHour)   # 8h - break times
@@ -192,7 +204,7 @@ while True:                         # BEGINNING OF SHIFT ## BEGINNING OF SHIFT #
     else:
         resAfterAnHour,timeUsed = afterAnHour()   #if not in first hour, checks for the next ones
         if resAfterAnHour == True:
-            shiftLength = (6.33*sInAnHour) - timeUsed
+            shiftLength = (6.5*sInAnHour) - timeUsed
             # lastCycle = getPrevTime()
             # databaseUpdate(JLLongIpAdd,shift,lastCycle)
         else:
@@ -246,12 +258,7 @@ while True:                         # BEGINNING OF SHIFT ## BEGINNING OF SHIFT #
     for i in range(0, len(majorBucket)):    
         timeMajor = timeMajor + majorBucket[i]
 
-    if nOfMajor == 1:
-        nOfMajor -=1
-    if nOfMajor >=2:
-        nOfMajor -=2
-    if timeMajor >= 1800:
-        timeMajor -= 1800 # removes 30 min from major because of the breaks they take
+
         
 
 
