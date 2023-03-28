@@ -165,6 +165,7 @@ def breakTime(time):
 #     conn.close() #finished database updates
 #     return timeEpoch
     
+
 # MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ####
 
 
@@ -175,17 +176,12 @@ while True:                         # BEGINNING OF SHIFT ## BEGINNING OF SHIFT #
     resAfterAnHour = False
     happenedInFirst = False
 
-     
-
-
     majorBucket=[]  # Resets all the overtime categories
     
     minorBucket=[]
     
     microBucket = []
     
-
-
     now = datetime.now()
     nowTime = now.strftime("%H")
     print(nowTime)
@@ -258,14 +254,8 @@ while True:                         # BEGINNING OF SHIFT ## BEGINNING OF SHIFT #
     for i in range(0, len(majorBucket)):    
         timeMajor = timeMajor + majorBucket[i]
 
-
-        
-
-
     # WRITING IN EXCEL ## WRITING IN EXCEL ## WRITING IN EXCEL ## WRITING IN EXCEL #
     
-
-
     df = pd.read_excel(filename)
     i = 0
     while True:    # checks which is the first row without a value
