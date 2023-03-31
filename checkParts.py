@@ -10,8 +10,8 @@ JLLong = station("JLLONG")  # Station End of line OP100
 JLLongIpAdd = JLLong.selectIP()
 
 #Initialization for database
-hostname = 'localhost'
-database = 'scheduler_times'
+hostname = '10.110.19.205'
+database = 'timestamp'
 username = 'postgres'
 pwd = 'W1nter@2023Hydro' #Very safe, isn`t it lol
 port_id = 5432
@@ -62,7 +62,7 @@ def getPrevTime():
     port=port_id)
     cur = conn.cursor() #opens cursor (database stuff using psycopg2)
         
-    execute="SELECT epoch_time FROM scheduler_times_table WHERE ip_address='10.10.16.132' ORDER BY epoch_time DESC LIMIT 1;"
+    execute="SELECT epoch_time FROM parts_timestamp WHERE ip_address='10.10.16.132' ORDER BY epoch_time DESC LIMIT 1;"
 
     cur.execute(execute) #executes the thing (idk I copied this from a tutorial and it works)
     result = cur.fetchone()
@@ -89,7 +89,7 @@ def databaseUpdate(IP,shift,prevTime):
     cur = conn.cursor() #opens cursor (database stuff using psycopg2)
 
                 #SQL code \/
-    insert_script = 'INSERT INTO scheduler_times_table(ip_address, epoch_time, time_diff ,shift) VALUES(%s, %s, %s,%s)'
+    insert_script = 'INSERT INTO parts_timestamp(ip_address, epoch_time, time_diff ,shift) VALUES(%s, %s, %s,%s)'
     insert_values = (IP, timeEpoch, timeEpoch-prevTime ,shift)
 
 
@@ -116,6 +116,7 @@ while True:
         if pMde == True: #If a part is made, we check if it was over the cycletime and by how much
                 lastCycle = getPrevTime()   # gets the last time a part was made for the calculations
                 databaseUpdate(JLLongIpAdd,shift,lastCycle) # saves the timestamp on a database
+                print("Part made")
         now = datetime.now()
     print("END OF SHIFT")
     while now.strftime("%H") != '07' or '15' or '23':
