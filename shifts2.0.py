@@ -55,9 +55,8 @@ def afterAnHour(): # checks the time a part takes to be made after the first hou
         timeNow = datetime.now()
         if timeNow.strftime("%H:%M") ==endTime:
             return False,0
-        breakTime(timeNow.strftime("%H:%M"))
         t2 = time.time()
-    print("First part made! (Not first hour)")
+    print("Part made! (Not first hour)")
     return True, (t2-t1)
 
 def checkPart():    # main function that checks when a part is made and how long it took
@@ -69,7 +68,8 @@ def checkPart():    # main function that checks when a part is made and how long
         pass
 
     while timeNow.strftime("%H:%M") !=endTime:  # makes sure the loop isnt infinite
-        
+        if timeNow.strftime("%H:%M") == breakPeriod or timeNow.strftime("%H:%M") == lunchTime:
+            return False, 1
         if JLLong.onePart()[0][3] == 1:
             print("Part made! Made in: " + str(round(t2-t,1)) + " sec")
 
@@ -85,13 +85,13 @@ def whichShift(time):       # Tells which shift we are in and when it will end
     
     if time >= 7 and time < 15:
         print("day shift")
-        return "day" , "14:59" , '09:30', '12:30'    
+        return "day" , "14:59" , "09:30", "12:30"    
     elif time >= 15 and time < 23:
         print("afternoon shift")                    
-        return "afternoon", "22:59" , '17:30' , "20:30"
+        return "afternoon", "22:59" , "17:30" , "20:30"
     elif time  >= 23 or time < 7:
         print("night shift")
-        return "night" , "06:59" , "01:45" , '04:45'
+        return "night" , "06:59" , "01:45" , "04:45"
     else:
         print("Mid of shift")
         return "none" , "0"
@@ -107,11 +107,11 @@ def inFirstHour(hour):  # True when we are at the beginning of a shift
     else: 
         return False      
 
-def breakTime(time):
-    if time == breakPeriod:
+def breakTime(timee):
+    if timee == breakPeriod:
         time.sleep(10*60)
         return True
-    if time == lunchTime:
+    if timee == lunchTime:
         time.sleep(20*60)
         return True
     else:
@@ -213,7 +213,10 @@ while True:                         # BEGINNING OF SHIFT ## BEGINNING OF SHIFT #
         if endTime == '0':
             break
         pMde, timePerPart = checkPart() #calls function to check parts
-        
+        if pMde == False and timePerPart == 1:
+            now = datetime.now()
+            breakTime(now.strftime("%H:%M")) 
+            parts, timing = afterAnHour()
         if pMde == True: #If a part is made, we check if it was over the cycletime and by how much
             # lastCycle = getPrevTime()   # gets the last time a part was made for the calculations
             # databaseUpdate(JLLongIpAdd,shift,lastCycle) # saves the timestamp on a database
@@ -316,7 +319,7 @@ while True:                         # BEGINNING OF SHIFT ## BEGINNING OF SHIFT #
             
 
     # Save the changes to the Excel file
-    workbook.save('table_shifts.xlsx')
+    workbook.save('table_shiftsJLLong.xlsx')
 
 
     #SENDING EMAIL##SENDING EMAIL##SENDING EMAIL##SENDING EMAIL##SENDING EMAIL##SENDING EMAIL##SENDING EMAIL##SENDING EMAIL##SENDING EMAIL#
@@ -335,9 +338,9 @@ while True:                         # BEGINNING OF SHIFT ## BEGINNING OF SHIFT #
     msg.attach(MIMEText("Here is the shift report for: "+ shift +' of ' + datetime.today().strftime('%Y-%m-%d') + " :"))
 
     # attach a file
-    with open("table_shifts.xlsx", "rb") as f:
+    with open("table_shiftsJLLong.xlsx", "rb") as f:
         attach = MIMEApplication(f.read(),_subtype="txt")
-        attach.add_header('Content-Disposition','attachment',filename=str("table_shifts.xlsx"))
+        attach.add_header('Content-Disposition','attachment',filename=str("table_shiftsJLLong.xlsx"))
         msg.attach(attach)
 
     # create server
