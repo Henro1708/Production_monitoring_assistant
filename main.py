@@ -152,6 +152,11 @@ def databaseUpdate(IP,shift,prevTime,hostname,database,username,pwd,port_id):
     cur.close()
     conn.close() #finished database updates
     return timeEpoch
+
+def findStartion(sht,STATION):
+    for i in range(5,64):
+        if sht['C{}'.format(i)].value == STATION:
+            return i
     
 
 # MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ####
@@ -327,7 +332,7 @@ def main(filename,targetstat):
                 
 
         # Save the changes to the Excel file
-        workbook.save('table_shiftstargetStation.xlsx')
+        workbook.save('table_shifts.xlsx')
 
 
         #SENDING EMAIL##SENDING EMAIL##SENDING EMAIL##SENDING EMAIL##SENDING EMAIL##SENDING EMAIL##SENDING EMAIL##SENDING EMAIL##SENDING EMAIL#
@@ -346,9 +351,9 @@ def main(filename,targetstat):
         msg.attach(MIMEText("Here is the shift report for: "+ shift +' of ' + datetime.today().strftime('%Y-%m-%d') + " :"))
 
         # attach a file
-        with open("table_shiftstargetStation.xlsx", "rb") as f:
+        with open("table_shifts.xlsx", "rb") as f:
             attach = MIMEApplication(f.read(),_subtype="txt")
-            attach.add_header('Content-Disposition','attachment',filename=str("table_shiftstargetStation.xlsx"))
+            attach.add_header('Content-Disposition','attachment',filename=str("table_shifts.xlsx"))
             msg.attach(attach)
 
         # create server
