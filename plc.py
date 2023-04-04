@@ -9,6 +9,7 @@ class station:
 
     def __init__(self, name):
         self.name = name
+        self.ipAdd = 0
 
     # Find IP address for avialble station
     def selectIP(self):
