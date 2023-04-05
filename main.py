@@ -71,28 +71,28 @@ def checkPart(endTime,breakPeriod,lunchTime,targetStation):    # main function t
     return False, 0
 
 
-def whichShift(time):       # Tells which shift we are in and when it will end
+def whichShift(time, endArr, breakArr, lunchArr,hourArr):       # Tells which shift we are in and when it will end
     
-    if time >= 7 and time < 15:
+    if time >= hourArr[0] and time < hourArr[1]:
         print("day shift")
-        return "day" , "14:59" , "09:30", "12:30"    
-    elif time >= 15 and time < 23:
+        return "day" , endArr[0] , breakArr[0], lunchArr[0]    
+    elif time >= hourArr[1] and time < hourArr[2]:
         print("afternoon shift")                    
-        return "afternoon", "22:59" , "17:30" , "20:30"
-    elif time  >= 23 or time < 7:
+        return "afternoon", endArr[1] , breakArr[1] , lunchArr[1] 
+    elif time  >= hourArr[2] or time < hourArr[0]:
         print("night shift")
-        return "night" , "06:59" , "01:45" , "04:45"
+        return "night" , endArr[2] , breakArr[2] , lunchArr[2] 
     else:
         print("Mid of shift")
         return "none" , "0"
     
-def inFirstHour(hour):  # True when we are at the beginning of a shift
+def inFirstHour(hour, hourArr):  # True when we are at the beginning of a shift
     
-    if int(hour) == 7:
+    if int(hour) == hourArr[0]:
         return True
-    elif int(hour) == 15:
+    elif int(hour) == hourArr[1]:
         return True
-    elif int(hour) == 23:
+    elif int(hour) == hourArr[2]:
         return True
     else: 
         return False      
@@ -165,10 +165,9 @@ def findStation(sht,STATION):
 
 
 
-def main(filename,targetstat):
-    # FUNCTIONSSSSS 
-    #Excel spreadsheet
-    df = pd.read_excel(filename)
+def main(filename,targetstat, endArr, breakArr, lunchArr,hourArr):
+    # Setup
+    
 
     #STARTS station     
     targetStation = station(targetstat)  # Station End of line OP100
@@ -183,9 +182,11 @@ def main(filename,targetstat):
 
     FIVE_MIN = 5*60
     SEC_HOURS = 3600
+    print("Program running")
+    
+    
+    while True:             # BEGINNING OF SHIFT ## BEGINNING OF SHIFT ## BEGINNING OF SHIFT ## BEGINNING OF SHIFT #
 
-    while True:                         # BEGINNING OF SHIFT ## BEGINNING OF SHIFT ## BEGINNING OF SHIFT ## BEGINNING OF SHIFT #
-        CYCLETIME = float(df.iat[1,14])  # sec/part decided on the excel file 
         resAfterAnHour = False
         happenedInFirst = False
 
@@ -197,13 +198,13 @@ def main(filename,targetstat):
         
         now = datetime.now()
         nowTime = now.strftime("%H")
-        print(nowTime)
-        while inFirstHour(nowTime) == False:   #waits for the next full shift to begin
+        
+        while inFirstHour(nowTime, hourArr) == False:   #waits for the next full shift to begin
             now = datetime.now()
             nowTime = now.strftime("%H")
         print("in shift")
 
-        shift, endTime , breakPeriod, lunchTime  = whichShift(int(nowTime))  #finds out which shift it is
+        shift, endTime , breakPeriod, lunchTime  = whichShift(int(nowTime),endArr,breakArr,lunchArr,hourArr)  #finds out which shift it is
         happenedInFirst = firstHour(targetStation)
         if happenedInFirst == True:   # Tests for the first hour (anytime in the first hour counts as a full hour)
             shiftLength = (7.5 * SEC_HOURS)   # 8h - break times
@@ -219,6 +220,44 @@ def main(filename,targetstat):
             else:
                 shiftLength = 0 #DID NOT RUN
 
+        # START/OPEN EXCEL FILE         
+        timeNow = datetime.now()
+        weekDay = timeNow.date().weekday() # 0 = Monday...
+    
+        if weekDay == 0 and shift == "day":
+            wbChange = xw.Book(r"Master_table.xlsx")
+            wbChange.save(r"workingTable\shifts_table.xlsx")
+            wbChange.close()
+         
+        wb = xw.Book(r"workingTable\shifts_table.xlsx")
+        
+
+        if weekDay == 0:
+            sht = wb.sheets['Mon']
+        elif weekDay == 1:
+            sht = wb.sheets['Tue']
+        elif weekDay == 2:
+            sht = wb.sheets['Wed']  
+        elif weekDay == 3:
+            sht = wb.sheets['Thu']
+        elif weekDay == 4:
+            sht = wb.sheets['Fri']
+        elif weekDay == 5:
+            sht = wb.sheets['Sat']
+        elif weekDay == 6:
+            sht = wb.sheets['Sun']
+
+        index = findStation(sht,targetstat)
+        if shift == "afternoon":
+            index+=1
+        elif shift == "night":
+            index+=2
+
+
+        CYCLETIME = sht['F{}'.format(index)].value  # sec/part decided on the excel file 
+        print(CYCLETIME)
+
+
 
         # MAIN PART OF SHIFT ## MAIN PART OF SHIFT ## MAIN PART OF SHIFT ## MAIN PART OF SHIFT ## MAIN PART OF SHIFT ## MAIN PART OF SHIFT #
 
@@ -231,7 +270,7 @@ def main(filename,targetstat):
                 parts, timing = afterAnHour(endTime,targetStation)
                 
             if pMde == True: #If a part is made, we check if it was over the cycletime and by how much
-                lastCycle = getPrevTime()   # gets the last time a part was made for the calculations
+                lastCycle = getPrevTime(hostname,database,username,pwd,port_id)   # gets the last time a part was made for the calculations
                 databaseUpdate(stationIP,shift,lastCycle,hostname,database,username,pwd,port_id) # saves the timestamp on a database
                 if timePerPart > CYCLETIME:
                     if timePerPart - CYCLETIME > 3 *60: # over 3 min = Service
@@ -268,43 +307,8 @@ def main(filename,targetstat):
             timeMajor = timeMajor + majorBucket[i]
 
         # WRITING IN EXCEL ## WRITING IN EXCEL ## WRITING IN EXCEL ## WRITING IN EXCEL #
-        
-        timeNow = datetime.now()
-        weekDay = timeNow.date().weekday() # 0 = Monday...
-    
-        if weekDay == 0 and shift == "day":
-            wbChange = xw.Book(r"Master_table.xlsx")
-            wbChange.save(r"workingTable\shifts_table.xlsx")
-            wbChange.close()
             
-        wb = xw.Book(r"workingTable\shifts_table.xlsx")
-        if shift == "night":
-            if weekDay == 0:
-                
-                weekDay = 6
-            else:
-                weekDay -=1
-
-        if weekDay == 0:
-            sht = wb.sheets['Mon']
-        elif weekDay == 1:
-            sht = wb.sheets['Tue']
-        elif weekDay == 2:
-            sht = wb.sheets['Wed']  
-        elif weekDay == 3:
-            sht = wb.sheets['Thu']
-        elif weekDay == 4:
-            sht = wb.sheets['Fri']
-        elif weekDay == 5:
-            sht = wb.sheets['Sat']
-        elif weekDay == 6:
-            sht = wb.sheets['Sun']
-
-        index = findStation(sht,targetstat)
-        if shift == "afternoon":
-            index+=1
-        elif shift == "night":
-            index+=2
+        
 
         sht['D{}'.format(index)].value = shiftLength/3600 # The original value was in seconds, so we transfer it into hours
         sht['E{}'.format(index)].value = time_awarded/3600
@@ -325,7 +329,7 @@ def main(filename,targetstat):
 
         # create message object instance
         msg = MIMEMultipart()
-        to_list = ["shubham.savani@martinrea.com", "henrique.rodriques@martinrea.com"]  # ADD BRIAN LATER
+        to_list = ["henrique.rodriques@martinrea.com"]  # ADD BRIAN AND SHUBHAM LATER
         # setup the parameters of the message
         password = "hiqrzmqfjltittct"   # VERY SECURE
         msg['From'] = "shiftreportshydroform@gmail.com"
