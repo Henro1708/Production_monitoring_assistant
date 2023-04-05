@@ -13,6 +13,8 @@ from openpyxl.styles import Font, Color, PatternFill
 from openpyxl.utils import get_column_letter
 from openpyxl import Workbook
 import psycopg2
+import xlwings as xw
+
 
 
 
@@ -153,7 +155,7 @@ def databaseUpdate(IP,shift,prevTime,hostname,database,username,pwd,port_id):
     conn.close() #finished database updates
     return timeEpoch
 
-def findStartion(sht,STATION):
+def findStation(sht,STATION):
     for i in range(5,64):
         if sht['C{}'.format(i)].value == STATION:
             return i
@@ -232,15 +234,11 @@ def main(filename,targetstat):
                 lastCycle = getPrevTime()   # gets the last time a part was made for the calculations
                 databaseUpdate(stationIP,shift,lastCycle,hostname,database,username,pwd,port_id) # saves the timestamp on a database
                 if timePerPart > CYCLETIME:
-                    if timePerPart - CYCLETIME > FIVE_MIN*2: # over 10 min = major
+                    if timePerPart - CYCLETIME > 3 *60: # over 3 min = Service
                         print("Major problem at: "+ str(now))
                         majorBucket.append(timePerPart-CYCLETIME)
-                        
-                    elif timePerPart- CYCLETIME > FIVE_MIN:  #one minute = minor
-                        print("Minor problem at: "+ str(now))
-                        minorBucket.append(timePerPart-CYCLETIME)
-                        
-                    else:                                   # Less than 5 min = micro
+                                        
+                    else:                                   # Less than 3 min = micro
                         print("Micro problem at: "+ str(now))
                         microBucket.append(timePerPart-CYCLETIME)
                         
@@ -252,17 +250,16 @@ def main(filename,targetstat):
         nOfParts = targetStation.prodCounter()[0][3]
         time_awarded = nOfParts * CYCLETIME  #How much time was actually produced on this shift
         timeDiff = time_awarded - shiftLength
-        nOfMinor = len(minorBucket)
+        
         nOfMajor = len(majorBucket)
         nOfMicro = len(microBucket)
         expectedNOfParts = int(shiftLength/CYCLETIME)
 
-        timeMinor = 0
+        
         timeMicro = 0
         timeMajor = 0
 
-        for i in range(0, nOfMinor):    
-            timeMinor = timeMinor + minorBucket[i]
+        
 
         for i in range(0, nOfMicro):    
             timeMicro = timeMicro + microBucket[i]   
@@ -272,74 +269,63 @@ def main(filename,targetstat):
 
         # WRITING IN EXCEL ## WRITING IN EXCEL ## WRITING IN EXCEL ## WRITING IN EXCEL #
         
-        df = pd.read_excel(filename)
-        i = 0
-        while True:    # checks which is the first row without a value
-            if pd.isna(df.iloc[i,0]) == True:
-                break
-            i+=1  
-        # SAVES ALL THE INFO
-
-        df.at[i, 'ID'] = i
-        df.at[i, 'Date'] = datetime.today().strftime('%Y-%m-%d')
-        df.at[i, 'Shift'] = shift
-        df.at[i, 'Hours Worked'] = round(shiftLength/3600,3) # The original value was in seconds, so we transfer it into hours
-        df.at[i, 'Hours Earned'] = round(time_awarded/3600,3)
-        df.at[i, 'Hours Difference'] = round(timeDiff/3600,3)
-        df.at[i, 'Parts Made'] = nOfParts
-        df.at[i, 'Parts Expected'] = expectedNOfParts
-        df.at[i, 'Micro Errors'] = nOfMicro
-        df.at[i, 'Minor Errors'] = nOfMinor
-        df.at[i, 'Major Errors'] = nOfMajor #Counting for the 2 breaks the workers take
-        df.at[i, 'Major Time'] = round((timeMajor/3600),3)  # taking the times as breaks out (hardcoded I know, but well...)
-        df.at[i, 'Micro Time'] = round(timeMicro/3600,3)
-        df.at[i, 'Minor Time'] = round(timeMinor/3600,3)
-        
-
-
-
-        new_row = pd.Series([np.nan] * len(df.columns)) # These 2 lines make sure we read the next line when scanning the file on next iteration
-        df.at[i+1, 'Major Errors'] = 0
-
-        df.loc[len(df)] = new_row
-
-        df.to_excel(filename, index=False)
-
-
-        #HERE WE FIX THE WEIRD FORMATTING OF THE EXCEL FILE
-
-        # Create a new workbook object
-        workbook = Workbook()
-
-        # Select the active worksheet
-        worksheet = workbook.active
-
-
-
-        # Write the header row to the Excel sheet and determine the column widths
-        header = list(df.columns)
-        column_widths = []
-        for c, value in enumerate(header, start=1):
-            worksheet.cell(row=1, column=c, value=value)
-            column_width = max([len(str(cell)) for cell in df[value]] + [len(str(value))])
-            worksheet.column_dimensions[get_column_letter(c)].width = column_width+2
-            column_widths.append(column_width)
-
-        # Write the remaining rows from the DataFrame to the Excel sheet
-        for r, row in enumerate(df.to_numpy(), start=2):
-            for c, value in enumerate(row, start=1):
-                cell = worksheet.cell(row=r, column=c, value=value)
+        timeNow = datetime.now()
+        weekDay = timeNow.date().weekday() # 0 = Monday...
+    
+        if weekDay == 0 and shift == "day":
+            wbChange = xw.Book(r"Master_table.xlsx")
+            wbChange.save(r"workingTable\shifts_table.xlsx")
+            wbChange.close()
+            
+        wb = xw.Book(r"workingTable\shifts_table.xlsx")
+        if shift == "night":
+            if weekDay == 0:
                 
+                weekDay = 6
+            else:
+                weekDay -=1
 
-        # Save the changes to the Excel file
-        workbook.save('table_shifts.xlsx')
+        if weekDay == 0:
+            sht = wb.sheets['Mon']
+        elif weekDay == 1:
+            sht = wb.sheets['Tue']
+        elif weekDay == 2:
+            sht = wb.sheets['Wed']  
+        elif weekDay == 3:
+            sht = wb.sheets['Thu']
+        elif weekDay == 4:
+            sht = wb.sheets['Fri']
+        elif weekDay == 5:
+            sht = wb.sheets['Sat']
+        elif weekDay == 6:
+            sht = wb.sheets['Sun']
+
+        index = findStation(sht,targetstat)
+        if shift == "afternoon":
+            index+=1
+        elif shift == "night":
+            index+=2
+
+        sht['D{}'.format(index)].value = round(shiftLength/3600,3) # The original value was in seconds, so we transfer it into hours
+        sht['E{}'.format(index)].value = round(time_awarded/3600,3)
+        sht['G{}'.format(index)].value = nOfParts
+        sht['L{}'.format(index)].value = nOfMicro
+        sht['N{}'.format(index)].value = nOfMajor
+        sht['M{}'.format(index)].value = round((timeMicro/3600),3)
+        sht['O{}'.format(index)].value = round((timeMajor/3600),3)
+
+
+
+
+        wb.save(r"workingTable\shifts_table.xlsx")
+        wb.close()
 
 
         #SENDING EMAIL##SENDING EMAIL##SENDING EMAIL##SENDING EMAIL##SENDING EMAIL##SENDING EMAIL##SENDING EMAIL##SENDING EMAIL##SENDING EMAIL#
 
         # create message object instance
         msg = MIMEMultipart()
-        to_list = ["shubham.savani@martinrea.com", "henrique.rodriques@martinrea.com", "brian.rankin@martinrea.com"]
+        to_list = ["shubham.savani@martinrea.com", "henrique.rodriques@martinrea.com"]  # ADD BRIAN LATER
         # setup the parameters of the message
         password = "hiqrzmqfjltittct"   # VERY SECURE
         msg['From'] = "shiftreportshydroform@gmail.com"
@@ -351,7 +337,7 @@ def main(filename,targetstat):
         msg.attach(MIMEText("Here is the shift report for: "+ shift +' of ' + datetime.today().strftime('%Y-%m-%d') + " :"))
 
         # attach a file
-        with open("table_shifts.xlsx", "rb") as f:
+        with open("workingTable\shifts_table.xlsx", "rb") as f:
             attach = MIMEApplication(f.read(),_subtype="txt")
             attach.add_header('Content-Disposition','attachment',filename=str("table_shifts.xlsx"))
             msg.attach(attach)

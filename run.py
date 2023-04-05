@@ -3,8 +3,8 @@ from multiprocessing import Process
 
 if __name__ == "__main__":
         
-    xlfilename = ['table_shiftsJLLong.xlsx']
-    stations = ["JLLONG"]
+    xlfilename = ['table_shiftsJLLong.xlsx', 'test.xlsx']
+    stations = ["JLLONG", "TEST"]
 
     procs = []
 
