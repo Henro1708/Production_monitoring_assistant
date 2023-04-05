@@ -306,13 +306,13 @@ def main(filename,targetstat):
         elif shift == "night":
             index+=2
 
-        sht['D{}'.format(index)].value = round(shiftLength/3600,3) # The original value was in seconds, so we transfer it into hours
-        sht['E{}'.format(index)].value = round(time_awarded/3600,3)
+        sht['D{}'.format(index)].value = shiftLength/3600 # The original value was in seconds, so we transfer it into hours
+        sht['E{}'.format(index)].value = time_awarded/3600
         sht['G{}'.format(index)].value = nOfParts
         sht['L{}'.format(index)].value = nOfMicro
         sht['N{}'.format(index)].value = nOfMajor
-        sht['M{}'.format(index)].value = round((timeMicro/3600),3)
-        sht['O{}'.format(index)].value = round((timeMajor/3600),3)
+        sht['M{}'.format(index)].value = timeMicro/3600
+        sht['O{}'.format(index)].value = timeMajor/3600
 
 
 
