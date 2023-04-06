@@ -39,7 +39,7 @@ def afterAnHour(endTime, targetStation): # checks the time a part takes to be ma
     while targetStation.onePart()[0][3] != 1: #PLC tells when part is made
         
         timeNow = datetime.now()
-        if timeNow.strftime("%H:%M") == endTime:
+        if timeNow.strftime("%H:%M") == endTime:   # If it is not the end of the shift, keep checking until a part is made
             return False,0
         t2 = time.time()
     print("Part made! (Not first hour)")
@@ -60,10 +60,10 @@ def checkPart(endTime,breakPeriod,lunchTime,targetStation):    # main function t
     while timeNow.strftime("%H:%M") != endTime:  # makes sure the loop isnt infinite
         if timeNow.strftime("%H:%M") == breakPeriod or timeNow.strftime("%H:%M") == lunchTime:
             return False, 1
-        if targetStation.onePart()[0][3] == 1:
+        if targetStation.onePart()[0][3] == 1:  
             print("Part made! Made in: " + str(round(t2-t,1)) + " sec")
 
-            print(str(targetStation.prodCounter()[0][3]) + " parts on this shift")
+            print(str(targetStation.prodCounter()[0][3]) + " parts on this shift")   # When a part is made we return True and the time it took
             return True, t2-t
         
         t2 = time.time()
@@ -73,7 +73,7 @@ def checkPart(endTime,breakPeriod,lunchTime,targetStation):    # main function t
 
 def whichShift(time, endArr, breakArr, lunchArr,hourArr):       # Tells which shift we are in and when it will end
     
-    if time >= hourArr[0] and time < hourArr[1]:
+    if time >= hourArr[0] and time < hourArr[1]:   # These values are passed as parameters from the other file (run.py)
         print("day shift")
         return "day" , endArr[0] , breakArr[0], lunchArr[0]    
     elif time >= hourArr[1] and time < hourArr[2]:
@@ -88,7 +88,7 @@ def whichShift(time, endArr, breakArr, lunchArr,hourArr):       # Tells which sh
     
 def inFirstHour(hour, hourArr):  # True when we are at the beginning of a shift
     
-    if int(hour) == hourArr[0]:
+    if int(hour) == hourArr[0]:  # Values come from run.py as parameters
         return True
     elif int(hour) == hourArr[1]:
         return True
@@ -101,7 +101,7 @@ def breakTime(timee,breakPeriod,lunchTime):  #called timee so it doesn't get mes
     if timee == breakPeriod:
         time.sleep(10*60)
         return True
-    if timee == lunchTime:
+    if timee == lunchTime:    # If it is break time we pause and only resume after the break/lunch has ended
         time.sleep(20*60)
         return True
     else:
@@ -116,14 +116,14 @@ def getPrevTime(hostname,database,username,pwd,port_id):
     password = pwd,
     port=port_id)
     cur = conn.cursor() #opens cursor (database stuff using psycopg2)
-        
+        #SQL code
     execute="SELECT epoch_time FROM parts_timestamp WHERE ip_address='10.10.16.132' ORDER BY epoch_time DESC LIMIT 1;"
 
-    cur.execute(execute) #executes the thing (idk I copied this from a tutorial and it works)
+    cur.execute(execute) #executes the thing 
     result = cur.fetchone()
-    #print("data fetched")
+    
     cur.close()
-    conn.close() #finished database updates
+    conn.close() #finished database fetch
     if result == None:
         return time.time()
     else:
@@ -148,24 +148,24 @@ def databaseUpdate(IP,shift,prevTime,hostname,database,username,pwd,port_id):
     insert_values = (IP, timeEpoch, timeEpoch-prevTime ,shift)
 
 
-    cur.execute(insert_script, insert_values) #executes the thing (idk I copied this from a tutorial and it works)
+    cur.execute(insert_script, insert_values) #executes query
     conn.commit()
     #print("Database updated")
     cur.close()
     conn.close() #finished database updates
-    return timeEpoch
+    return timeEpoch  # Returns the value we just fetched
 
-def findStation(sht,STATION):
+def findStation(sht,STATION):  # Loops through the excel file and finds which row has the expected station
     for i in range(5,64):
         if sht['C{}'.format(i)].value == STATION:
-            return i
+            return i #returns the row
     
 
 # MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ##### MAIN ####
 
 
 
-def main(filename,targetstat, endArr, breakArr, lunchArr,hourArr):
+def main(targetstat, endArr, breakArr, lunchArr,hourArr): #parameters are station, end times for all shifts as an array, break times, lunchtimes, and shift start times (arrays)
     # Setup
     
 
@@ -174,13 +174,12 @@ def main(filename,targetstat, endArr, breakArr, lunchArr,hourArr):
     stationIP = targetStation.selectIP()
 
     #Initialization for database
-    hostname = '10.110.19.205'
+    hostname = '10.110.19.205' # IP address of the server laptop
     database = 'timestamp'
     username = 'postgres'
-    pwd = 'W1nter@2023Hydro' #Very safe, isn`t it lol
+    pwd = 'W1nter@2023Hydro' #Very safe, I know
     port_id = 5432
 
-    FIVE_MIN = 5*60
     SEC_HOURS = 3600
     print("Program running")
     
@@ -190,49 +189,47 @@ def main(filename,targetstat, endArr, breakArr, lunchArr,hourArr):
         resAfterAnHour = False
         happenedInFirst = False
 
-        majorBucket=[]  # Resets all the overtime categories
+        majorBucket=[]  # Resets all the overtime categories #Arrays of incidents greater than 3 minutes
         
-        minorBucket=[]
-        
-        microBucket = []
+        microBucket = [] #similar but less than 3 mins
         
         now = datetime.now()
         nowTime = now.strftime("%H")
         
-        while inFirstHour(nowTime, hourArr) == False:   #waits for the next full shift to begin
+        while inFirstHour(nowTime, hourArr) == False:   #this waits for the next full shift to start
             now = datetime.now()
             nowTime = now.strftime("%H")
         print("in shift")
 
         shift, endTime , breakPeriod, lunchTime  = whichShift(int(nowTime),endArr,breakArr,lunchArr,hourArr)  #finds out which shift it is
-        happenedInFirst = firstHour(targetStation)
-        if happenedInFirst == True:   # Tests for the first hour (anytime in the first hour counts as a full hour)
+        happenedInFirst = firstHour(targetStation) #returns a bool that indicates whether production was started in the first hour of the shift or not
+        if happenedInFirst == True:   # Tests for the first hour (anytime in the first hour counts as a full shift worked)
             shiftLength = (7.5 * SEC_HOURS)   # 8h - break times
-            lastCycle = getPrevTime(hostname,database,username,pwd,port_id)
-            databaseUpdate(stationIP,shift,lastCycle,hostname,database,username,pwd,port_id)
+            lastCycle = getPrevTime(hostname,database,username,pwd,port_id) #fetches the database for the previous time a part was made
+            databaseUpdate(stationIP,shift,lastCycle,hostname,database,username,pwd,port_id) #updates the database every time a part is made
 
         else:
-            resAfterAnHour,timeUsed = afterAnHour(endTime,targetStation)   #if not in first hour, checks for the next ones
-            if resAfterAnHour == True:
-                shiftLength = (6.5*SEC_HOURS) - timeUsed
-                lastCycle = getPrevTime(hostname,database,username,pwd,port_id)
+            resAfterAnHour,timeUsed = afterAnHour(endTime,targetStation)   #if production was not strarted in the first hour, it checks when a part is made or iof the shift is over
+            if resAfterAnHour == True: #if a part was made
+                shiftLength = (6.5*SEC_HOURS) - timeUsed #this determines the amount of time worked on the shift
+                lastCycle = getPrevTime(hostname,database,username,pwd,port_id) #refer to 208
                 databaseUpdate(stationIP,shift,lastCycle,hostname,database,username,pwd,port_id)
             else:
-                shiftLength = 0 #DID NOT RUN
+                shiftLength = 0 #DID NOT RUN 
 
         # START/OPEN EXCEL FILE         
         timeNow = datetime.now()
         weekDay = timeNow.date().weekday() # 0 = Monday...
     
-        if weekDay == 0 and shift == "day":
-            wbChange = xw.Book(r"Master_table.xlsx")
+        if weekDay == 0 and shift == "day": # restarts the file every monday morning
+            wbChange = xw.Book(r"Master_table.xlsx") #opens the original and saves a copy on the working folder
             wbChange.save(r"workingTable\shifts_table.xlsx")
             wbChange.close()
          
-        wb = xw.Book(r"workingTable\shifts_table.xlsx")
+        wb = xw.Book(r"workingTable\shifts_table.xlsx") #opens the workbook on excel
         
 
-        if weekDay == 0:
+        if weekDay == 0: # finds out which day of the week it is and opens the correct sheet
             sht = wb.sheets['Mon']
         elif weekDay == 1:
             sht = wb.sheets['Tue']
@@ -247,15 +244,15 @@ def main(filename,targetstat, endArr, breakArr, lunchArr,hourArr):
         elif weekDay == 6:
             sht = wb.sheets['Sun']
 
-        index = findStation(sht,targetstat)
+        index = findStation(sht,targetstat) # finds the row we will be edditing based on the station we are monitoring
         if shift == "afternoon":
             index+=1
         elif shift == "night":
             index+=2
 
 
-        CYCLETIME = sht['F{}'.format(index)].value  # sec/part decided on the excel file 
-        print(CYCLETIME)
+        CYCLETIME = sht['G{}'.format(index)].value  # sec/part decided on the excel file  
+        
 
 
 
@@ -288,38 +285,28 @@ def main(filename,targetstat, endArr, breakArr, lunchArr,hourArr):
         
         nOfParts = targetStation.prodCounter()[0][3]
         time_awarded = nOfParts * CYCLETIME  #How much time was actually produced on this shift
-        timeDiff = time_awarded - shiftLength
         
-        nOfMajor = len(majorBucket)
+        
+        nOfMajor = len(majorBucket)  # Number of late parts occurances
         nOfMicro = len(microBucket)
-        expectedNOfParts = int(shiftLength/CYCLETIME)
-
         
         timeMicro = 0
         timeMajor = 0
 
-        
-
-        for i in range(0, nOfMicro):    
+        for i in range(0, nOfMicro):    # Counts the total time used on these occurances
             timeMicro = timeMicro + microBucket[i]   
         
         for i in range(0, nOfMajor):    
             timeMajor = timeMajor + majorBucket[i]
 
         # WRITING IN EXCEL ## WRITING IN EXCEL ## WRITING IN EXCEL ## WRITING IN EXCEL #
-            
-        
-
-        sht['D{}'.format(index)].value = shiftLength/3600 # The original value was in seconds, so we transfer it into hours
-        sht['E{}'.format(index)].value = time_awarded/3600
-        sht['G{}'.format(index)].value = nOfParts
+        sht['D{}'.format(index)].value = shiftLength/SEC_HOURS # The original value was in seconds, so we transfer it into hours
+        sht['E{}'.format(index)].value = time_awarded/SEC_HOURS
+        sht['H{}'.format(index)].value = nOfParts
         sht['L{}'.format(index)].value = nOfMicro
-        sht['N{}'.format(index)].value = nOfMajor
-        sht['M{}'.format(index)].value = timeMicro/3600
-        sht['O{}'.format(index)].value = timeMajor/3600
-
-
-
+        sht['O{}'.format(index)].value = nOfMajor
+        sht['N{}'.format(index)].value = timeMicro/SEC_HOURS
+        sht['Q{}'.format(index)].value = timeMajor/SEC_HOURS
 
         wb.save(r"workingTable\shifts_table.xlsx")
         wb.close()
@@ -329,7 +316,7 @@ def main(filename,targetstat, endArr, breakArr, lunchArr,hourArr):
 
         # create message object instance
         msg = MIMEMultipart()
-        to_list = ["henrique.rodriques@martinrea.com"]  # ADD BRIAN AND SHUBHAM LATER
+        to_list = ["henrique.rodriques@martinrea.com", "henriqueengelke@gmail.com"]  # ADD BRIAN AND SHUBHAM LATER
         # setup the parameters of the message
         password = "hiqrzmqfjltittct"   # VERY SECURE
         msg['From'] = "shiftreportshydroform@gmail.com"
@@ -358,5 +345,5 @@ def main(filename,targetstat, endArr, breakArr, lunchArr,hourArr):
         # send the message via the server.
         server.sendmail(msg['From'], to_list, msg.as_string())
 
-        # terminate the SMTP session
+        # terminate the session
         server.quit()
