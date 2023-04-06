@@ -1,5 +1,6 @@
 from main import main
 from multiprocessing import Process
+from emailSending import sendEmail
 
 if __name__ == "__main__": #this is necessary to make sure the thing exists
         
@@ -19,12 +20,18 @@ if __name__ == "__main__": #this is necessary to make sure the thing exists
     firstHourArrays = [firstHoursJLLong, 'Test']
 
     #starting the processes
+    email = Process(target = sendEmail)
+    email.start()
     for i in range(len(stations)):
         proc = Process(target = main, args = (stations[i],endTimeArrays[i],breakArrays[i] ,lunchArrays[i],firstHourArrays[i], ))
+        
         procs.append(proc)
         proc.start() #Starts proccesses
     for proc in procs:
         proc.join() #this ensures the processes end together (not critiacal here)
+
+    email.join()
+
 
     
 
