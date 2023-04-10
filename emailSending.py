@@ -9,7 +9,9 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 
 def sendEmail():
+    print("Email started up")
     while True:
+        timeNow = datetime.now()
         while timeNow.strftime("%H:%M") != '00:01' and timeNow.strftime("%H:%M") != '15:00' and timeNow.strftime("%H:%M") != '07:00':
             timeNow = datetime.now()
         

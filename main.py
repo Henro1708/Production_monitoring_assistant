@@ -220,7 +220,13 @@ def main(targetstat, endArr, breakArr, lunchArr,hourArr): #parameters are statio
         # START/OPEN EXCEL FILE         
         timeNow = datetime.now()
         weekDay = timeNow.date().weekday() # 0 = Monday...
-    
+        if shift == "night":
+            if weekDay == 0:
+                weekDay =6
+            else:
+                weekDay -=1
+
+
         if weekDay == 0 and shift == "day": # restarts the file every monday morning
             wbChange = xw.Book(r"Master_table.xlsx") #opens the original and saves a copy on the working folder
             wbChange.save(r"workingTable\shifts_table.xlsx")

@@ -25,6 +25,34 @@
                 }
         },
         {
+            "Station_Name": "ELCV",
+            "Station_IPadd": "10.10.14.71",
+            "Tag_Name": 
+                {
+                    "One_Part_Trigger":["Program:Cell_ELCV.Prod1.Accepted_Parts_Trigger"],
+                    "Production_Counter": ["Program:Cell_ELCV.Prod1.Current_Day[0].Daily_Total_Accept"]
+                }
+        },
+        {
+            "Station_Name": "P1",
+            "Station_IPadd": "10.10.12.80",
+            "Tag_Name": 
+                {
+                    "One_Part_Trigger":["ANDON_Mars_Count"],
+                    "Production_Counter": ["Press_1.Part_Count"]
+                }
+        },
+        {
+            "Station_Name": "CD4FR",
+            "Station_IPadd": "10.10.14.12",
+            "Tag_Name": 
+                {
+                    "One_Part_Trigger":["ONE_PART"],
+                    "Production_Counter": ["FRONT_CRADLE.Production_Counter_Currentt"]
+                }
+        },
+
+        {
             "Station_Name": "OP100",
             "Station_IPadd": "10.110.50.201",
             "Tag_Name": 
