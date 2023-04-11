@@ -48,7 +48,7 @@
             "Tag_Name": 
                 {
                     "One_Part_Trigger":["ONE_PART"],
-                    "Production_Counter": ["FRONT_CRADLE.Production_Counter_Currentt"]
+                    "Production_Counter": ["FRONT_CRADLE.Production_Counter_Current"]
                 }
         },
 

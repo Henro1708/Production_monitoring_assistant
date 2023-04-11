@@ -27,7 +27,7 @@ def firstHour(targetStation):               # Checks if a part is made on the fi
     t2 = time.time()
     while (t1 - t2) < 3600:   #seconds in an hour
         if targetStation.onePart()[0][3] == 1:          #PLC says a part is made  
-            print("First part made! (First hour)")
+            print("First part made! (First hour): {}".format(targetStation))
             return True
         t1=time.time()
     return False
@@ -61,7 +61,7 @@ def checkPart(endTime,breakPeriod,lunchTime,targetStation):    # main function t
         if timeNow.strftime("%H:%M") == breakPeriod or timeNow.strftime("%H:%M") == lunchTime:
             return False, 1
         if targetStation.onePart()[0][3] == 1:  
-            print("Part made! Made in: " + str(round(t2-t,1)) + " sec")
+            print("Part made! Made in: " + str(round(t2-t,1)) + " sec: "+ str(targetStation))
 
             print(str(targetStation.prodCounter()[0][3]) + " parts on this shift")   # When a part is made we return True and the time it took
             return True, t2-t
@@ -181,7 +181,7 @@ def main(targetstat, endArr, breakArr, lunchArr,hourArr): #parameters are statio
     port_id = 5432
 
     SEC_HOURS = 3600
-    print("Program running")
+    print("Program running: " + targetstat)
     
     
     while True:             # BEGINNING OF SHIFT ## BEGINNING OF SHIFT ## BEGINNING OF SHIFT ## BEGINNING OF SHIFT #
