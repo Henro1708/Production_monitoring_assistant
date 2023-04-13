@@ -15,6 +15,9 @@ from openpyxl import Workbook
 import psycopg2
 import xlwings as xw
 
+# THIS PROGRAM IS ALMOST EQUAL TO main.py, EXCEPT THE TRIGGER FOR the PARTS MADE IS BASED ON THE COUNT
+
+
 #Checking start time and assigning an appropriate shitft length
 
 def firstHour(targetStation):               # Checks if a part is made on the first hour 
@@ -24,7 +27,7 @@ def firstHour(targetStation):               # Checks if a part is made on the fi
     previousValue = value
     while (t1 - t2) < 3600:   #seconds in an hour
         value = targetStation.prodCounter()[0][3]
-        if value > previousValue:          #PLC says a part is made  
+        if value > previousValue:          #PLC tells us the counter and it sees if it has changed. Needs to be done because Part done signal is too quick  
             print("First part made! (First hour): {}".format(targetStation))
             return True
         t1=time.time()

@@ -26,9 +26,9 @@ if __name__ == "__main__": #this is necessary to make sure the thing exists
     firstHoursELCV = [7, 15, 23]
 
     # TIMES FOR JLLONG
-    lunchJLLong = ["12:30", "20:30", "04:45"]    
-    breakJLLong = ["09:30","17:30","01:45"]      
-    endTimeJLLong = ["14:59", "22:59", "06:59"]    
+    lunchJLLong = ["12:30", "20:30", "04:45"]    # Array for all lunch break times, lunch break at day shift, afternoon and night
+    breakJLLong = ["09:30","17:30","01:45"]      # Same for regular breaks
+    endTimeJLLong = ["14:59", "22:59", "06:59"]    # Times the shifts end
     firstHoursJLLong = [7, 15, 23]
 
     # TIME PRESSES // They use alternative monitoring because their part made signal is unoticable most of the time

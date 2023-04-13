@@ -29,8 +29,8 @@ while True:
     
     print(JLLong.onePart()[0][3])
         
-    print(JLLong.prodCounter()[0])
+    print(JLLong.prodCounter()[0][3])
     #print(JLLong.prodHourCounter())
-    time.sleep(2)
+    time.sleep(5)
     #print ("##################")
     
