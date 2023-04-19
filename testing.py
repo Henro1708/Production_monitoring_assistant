@@ -27,10 +27,10 @@ while True:
 
     #print("START MONITORING - JLLong")
     
-    print(JLLong.onePart()[0][3])
+    #print(JLLong.onePart()[0][3])
         
     print(JLLong.prodCounter()[0][3])
     #print(JLLong.prodHourCounter())
-    time.sleep(5)
+    time.sleep(2)
     #print ("##################")
     

@@ -7,16 +7,18 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
+import xlwings as xw
 
 def sendEmail():
     print("Email started up")
     while True:
         timeNow = datetime.now()
-        while timeNow.strftime("%H:%M") != '00:01' and timeNow.strftime("%H:%M") != '15:00' and timeNow.strftime("%H:%M") != '07:00':
+        while timeNow.strftime("%H:%M") != '00:01' and timeNow.strftime("%H:%M") != '15:05' and timeNow.strftime("%H:%M") != '07:05':
             timeNow = datetime.now()
         
         now = datetime.now()
         day = now.strftime("%D")
+        
 
         # create message object instance
         msg = MIMEMultipart()
@@ -33,7 +35,7 @@ def sendEmail():
 
 
         msg.attach(MIMEText("Here is the most updated shift report as of {} :".format(day)))
-        print(day)
+        #print(day)
 
         # attach a file
         with open("workingTable\shifts_table.xlsx", "rb") as f:
@@ -55,4 +57,11 @@ def sendEmail():
 
         # terminate the session
         server.quit()
+
+        now = datetime.now()
+        weekDay = now.date().weekday()
+        if timeNow.strftime("%H") == "15" and weekDay == 0:
+            wbChange = xw.Book(r"Master_table.xlsx") #opens the original and saves a copy on the working folder
+            wbChange.save(r"workingTable\shifts_table.xlsx")
+            wbChange.close()
         time.sleep(65)

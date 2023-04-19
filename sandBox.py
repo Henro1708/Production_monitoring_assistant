@@ -16,39 +16,58 @@ from openpyxl import Workbook
 import psycopg2
 import xlwings as xw
 
+targetStation = station("P1")
+targetStationIpAdd = targetStation.selectIP()
+endTime = "09:10"
+
+def checkTime(targetStation,endTime):
+    t2 = time.time()
+    t1 = time.time()
+    
+    value = targetStation.prodCounter()[0][3]
+    previousValue = value
+
+    if value == None:
+        value = 0
+    if previousValue == None:
+        previousValue = 0
+
+    while value <= previousValue: #PLC tells when part is made
+        value = targetStation.prodCounter()[0][3]
+
+        if value == None:
+            value = 0
+        if previousValue == None:
+            previousValue = 0
+
+
+        timeNow = datetime.now()
+        if timeNow.strftime("%H:%M") == endTime:   # If it is not the end of the shift, keep checking until a part is made
+            return False,-1
+        if t2-t1 >120:
+            return False,0
+        t2 = time.time()
+    print("Part was made at Presses")
+    return True , t2-t1
+
+
+t2 = time.time()
+t1 = time.time()
+timeArray = []
+now = datetime.now()
+while now.strftime("%H:%M") != endTime:   #START CHECKING EVERY MOMENT
+
+    pMdeRes, timeTaken = checkTime(targetStation,endTime)
+    if pMdeRes == True:
+        timeArray.append(timeTaken)
+    else:
+        pass
+    now = datetime.now()
 
 
 
-def testingTimes():
-    print("TESTING STARTED")
-    JLLongCD = station("CD4FR")
-    JLLongIpAddCD = JLLongCD.selectIP()
-    JLLong = station("JLLONG")
-    JLLongIpAddJL = JLLong.selectIP()
-    JLLongEL = station("ELCV")
-    JLLongIpAddEL = JLLongEL.selectIP()
-    valueCD = 0
-    valueJL=0
-    valueEL=0
-    while True:
-        oldJL = valueJL
-        oldEL = valueEL
-        oldCD = valueCD
-        valueCD = JLLongCD.prodCounter()[0][3]
-        valueJL = JLLong.prodCounter()[0][3]
-        valueEL = JLLongEL.prodCounter()[0][3]
-        if oldCD > valueCD:
-            timeNow = datetime.now()
-            print("Counter reset at CD4 at {}".format(timeNow.strftime("%H:%M")))
 
-        if oldEL > valueEL:
-            timeNow = datetime.now()
-            print("Counter reset at ELCV at {}".format(timeNow.strftime("%H:%M")))
-
-        if oldJL > valueJL:
-            timeNow = datetime.now()
-            print("Counter reset at JLLong at {}".format(timeNow.strftime("%H:%M")))
-        time.sleep(5)
-
-
-testingTimes()
+shiftLength = 0
+for i in timeArray:
+    shiftLength+=i
+print(shiftLength)
