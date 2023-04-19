@@ -12,7 +12,7 @@ Here is an explanation of each file:
     - Very similar to main.py. it has the functions to read the signals from the PLC for stations that DON'T have a reliable 'part made' signal (P1, P2, P3, schuller) 
 
     PLC.py:
-    -Connects the other files to the plc so we can get informations from it
+    -Connects the other files to the plc so we can get information
     -Needs the jsonfile.json to get info for each station
 
     run.py
