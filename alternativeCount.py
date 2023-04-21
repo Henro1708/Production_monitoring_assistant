@@ -141,7 +141,7 @@ def findStation(sht,STATION):  # Loops through the excel file and finds which ro
             return i #returns the row
 
 
-def excelWrite(shift, targetstat, shiftLength,nOfParts):
+def excelWrite(shift, targetstat, shiftLength):
     with xw.App() as app:
         timeNow = datetime.now()
         weekDay = timeNow.date().weekday() # 0 = Monday...
@@ -177,7 +177,6 @@ def excelWrite(shift, targetstat, shiftLength,nOfParts):
             index+=2
 
         sht['D{}'.format(index)].value = shiftLength/3600 # The original value was in seconds, so we transfer it into hours
-        sht['H{}'.format(index)].value = nOfParts
 
         wb.save(r"workingTable/shifts_table.xlsx")
         wb.close()
@@ -249,12 +248,12 @@ def mainAlt(targetstat, endArr,hourArr): #parameters are station, end times for 
         print("END OF SHIFT")
         # END OF SHIFT HERE #### END OF SHIFT HERE #### END OF SHIFT HERE #### END OF SHIFT HERE #### END OF SHIFT HERE #### END OF SHIFT HERE ###
         
-        nOfParts = targetStation.prodCounter()[0][3]
+        
         
         
         # WRITING IN EXCEL ## WRITING IN EXCEL ## WRITING IN EXCEL ## WRITING IN EXCEL #
         
-        excelWrite(shift, targetstat, shiftLength,nOfParts)
+        excelWrite(shift, targetstat, shiftLength)
         
         
 

@@ -8,7 +8,7 @@ if __name__ == "__main__": #this is necessary to make sure the thing exists
         
     stationsMain = ["JLLONG", "CD4FR","ELCV"]
 
-    alternativeStations = ["P1", "P3"]
+    alternativeStations = ["P1", "P2","P3"]
 
     procs = [] #array for all the processes that will be started
     procsA = [] #array for all the processes that will be started
@@ -44,8 +44,8 @@ if __name__ == "__main__": #this is necessary to make sure the thing exists
 
     # ALternative arrays  # Arrays for alternative monitoring process
     
-    endTimeArraysAlt = [endTimeP,endTimeP]
-    firstHourArraysAlt = [firstHoursP,firstHoursP]
+    endTimeArraysAlt = [endTimeP,endTimeP,endTimeP]
+    firstHourArraysAlt = [firstHoursP,firstHoursP, firstHoursP]
 
     
     #starting the processes
