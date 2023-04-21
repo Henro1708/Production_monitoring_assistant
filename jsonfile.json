@@ -39,7 +39,16 @@
             "Tag_Name": 
                 {
                     "One_Part_Trigger":["ANDON_Mars_Count"],
-                    "Production_Counter": ["Press_1.Part_Count"]
+                    "Production_Counter": ["Shift_Production_Counter"]
+                }
+        },
+        {
+            "Station_Name": "P3",
+            "Station_IPadd": "10.10.12.82",
+            "Tag_Name": 
+                {
+                    "One_Part_Trigger":["ANDON_Mars_Count"],
+                    "Production_Counter": ["Shift_Production_Counter"]
                 }
         },
         {

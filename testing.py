@@ -7,7 +7,7 @@ import time
 # Initialising station  
 
 
-JLLong = station("P1")
+JLLong = station("P3")
 JLLongIpAdd = JLLong.selectIP()
 
 
@@ -31,6 +31,6 @@ while True:
         
     print(JLLong.prodCounter()[0][3])
     #print(JLLong.prodHourCounter())
-    time.sleep(2)
+    time.sleep(5)
     #print ("##################")
     
