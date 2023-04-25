@@ -28,7 +28,7 @@ def firstHour(targetStation):               # Checks if a part is made on the fi
         t1 = time.time()
         t2 = time.time()
         while (t1 - t2) < 3600:   #seconds in an hour
-            if targetStation.onePart()[0][3] == 1:          #PLC says a part is made  
+            if bool(targetStation.onePart()[0][3]) == 1:          #PLC says a part is made  
                 print("First part made! (First hour): {}".format(targetStation))
                 return True
             t1=time.time()
@@ -41,7 +41,7 @@ def afterAnHour(endTime, targetStation): # checks the time a part takes to be ma
     try:
         t1 = time.time()
         t2 = time.time()
-        while targetStation.onePart()[0][3] != 1: #PLC tells when part is made
+        while bool(targetStation.onePart)()[0][3] != 1: #PLC tells when part is made
             
             timeNow = datetime.now()
             if timeNow.strftime("%H:%M") == endTime:   # If it is not the end of the shift, keep checking until a part is made
@@ -63,13 +63,13 @@ def checkPart(endTime,breakPeriod,lunchTime,targetStation):    # main function t
         t2 = time.time()
         timeNow = datetime.now()
 
-        while targetStation.onePart()[0][3] == 1:  # These two lines are to make sure we don`t get 2 positives from the same part (because they are on the same loop)`
+        while bool(targetStation.onePart()[0][3]) == 1:  # These two lines are to make sure we don`t get 2 positives from the same part (because they are on the same loop)`
             pass
 
         while timeNow.strftime("%H:%M") != endTime:  # makes sure the loop isnt infinite
             if timeNow.strftime("%H:%M") == breakPeriod or timeNow.strftime("%H:%M") == lunchTime:
                 return False, 1
-            if targetStation.onePart()[0][3] == 1:  
+            if bool(targetStation.onePart()[0][3]) == 1:  
                 print("Part made! Made in: " + str(round(t2-t,1)) + " sec: "+ str(targetStation))
 
                 print(str(targetStation.prodCounter()[0][3]) + " parts on this shift")   # When a part is made we return True and the time it took
@@ -107,7 +107,7 @@ def inFirstHour(hour, hourArr):  # True when we are at the beginning of a shift
     elif int(hour) == hourArr[2]:
         return True
     else: 
-        return False     
+        return True #CHANGE   
     
 def breakTime(timee,breakPeriod,lunchTime):  #called timee so it doesn't get messed up with the library
     if timee == breakPeriod:

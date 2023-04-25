@@ -130,7 +130,7 @@ def inFirstHour(hour, hourArr):  # True when we are at the beginning of a shift
     elif int(hour) == hourArr[2]:
         return True
     else: 
-        return False     
+        return True #CHANGE    
 
 
 

@@ -16,58 +16,21 @@ from openpyxl import Workbook
 import psycopg2
 import xlwings as xw
 
-targetStation = station("P1")
+targetStation = station("JLLONG")
 targetStationIpAdd = targetStation.selectIP()
-endTime = "09:10"
 
-def checkTime(targetStation,endTime):
-    t2 = time.time()
+
+def firstHour(targetStation):               # Checks if a part is made on the first hour 
+
+        
     t1 = time.time()
+    t2 = time.time()
+    while (t1 - t2) < 3600:   #seconds in an hour
+        if (targetStation.onePart()[0][3]) == 1:          #PLC says a part is made  
+            print("First part made! (First hour): {}".format(targetStation))
+            return True
+        t1=time.time()
+    return False
+
     
-    value = targetStation.prodCounter()[0][3]
-    previousValue = value
-
-    if value == None:
-        value = 0
-    if previousValue == None:
-        previousValue = 0
-
-    while value <= previousValue: #PLC tells when part is made
-        value = targetStation.prodCounter()[0][3]
-
-        if value == None:
-            value = 0
-        if previousValue == None:
-            previousValue = 0
-
-
-        timeNow = datetime.now()
-        if timeNow.strftime("%H:%M") == endTime:   # If it is not the end of the shift, keep checking until a part is made
-            return False,-1
-        if t2-t1 >120:
-            return False,0
-        t2 = time.time()
-    print("Part was made at Presses")
-    return True , t2-t1
-
-
-t2 = time.time()
-t1 = time.time()
-timeArray = []
-now = datetime.now()
-while now.strftime("%H:%M") != endTime:   #START CHECKING EVERY MOMENT
-
-    pMdeRes, timeTaken = checkTime(targetStation,endTime)
-    if pMdeRes == True:
-        timeArray.append(timeTaken)
-    else:
-        pass
-    now = datetime.now()
-
-
-
-
-shiftLength = 0
-for i in timeArray:
-    shiftLength+=i
-print(shiftLength)
+firstHour(targetStation)
