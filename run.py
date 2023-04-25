@@ -33,18 +33,20 @@ if __name__ == "__main__": #this is necessary to make sure the thing exists
 
     # TIME PRESSES // They use alternative monitoring because their part made signal is unoticable most of the time
     
-    endTimeP = ["13:57", "21:57", "05:57"]  
+    endTimeP1 = ["13:57", "21:57", "05:57"]  
+    endTimeP2 = ["13:58", "21:58", "05:58"] 
+    endTimeP3 = ["14:00", "22:00", "06:00"] 
     firstHoursP = [6, 14, 22]
 
 
     lunchArrays =[lunchJLLong, lunchCD4,lunchELCV]
     breakArrays = [breakJLLong, breakCD4,breakELCV ]
-    endTimeArrays = [endTimeJLLong, endTimeCD4,endTimeELCV ]
+    endTimeArrays = [endTimeJLLong, endTimeCD4,endTimeELCV]
     firstHourArrays = [firstHoursJLLong, firstHoursCD4, firstHoursELCV]
 
     # ALternative arrays  # Arrays for alternative monitoring process
     
-    endTimeArraysAlt = [endTimeP,endTimeP,endTimeP]
+    endTimeArraysAlt = [endTimeP1,endTimeP2,endTimeP3]
     firstHourArraysAlt = [firstHoursP,firstHoursP, firstHoursP]
 
     
