@@ -6,7 +6,7 @@ from alternativeCount import mainAlt
 
 if __name__ == "__main__": #this is necessary to make sure the thing exists
         
-    stationsMain = ["JLLONG", "CD4FR","ELCV"]
+    stationsMain = ["JLLONG", "CD4FR","ELCV","CD4RR"]
 
     alternativeStations = ["P1", "P2","P3"]
 
@@ -15,10 +15,15 @@ if __name__ == "__main__": #this is necessary to make sure the thing exists
 
     #Times
     # TIMES CD4FR
-    lunchCD4 = ["12:00", "20:00", "04:15"]   # No night shift, so that time is not important
-    breakCD4 = ["08:30","17:00","01:15"] 
-    endTimeCD4 = ["13:59", "21:59", "05:59"]  #Make end times different so they don`t interfere with one another`    
-    firstHoursCD4 = [6, 14, 22]
+    lunchCD4FR = ["12:00", "20:00", "04:15"]   # No night shift, so that time is not important
+    breakCD4FR = ["08:30","17:00","01:15"] 
+    endTimeCD4FR = ["14:01", "22:01", "06:01"]  #Make end times different so they don`t interfere with one another`when editing the excel   
+    firstHoursCD4FR = [6, 14, 22]
+    # TIMES CD4RR
+    lunchCD4RR = ["12:00", "20:00", "04:15"]   # No night shift, so that time is not important
+    breakCD4RR = ["08:30","17:00","01:15"] 
+    endTimeCD4RR = ["13:59", "21:59", "05:59"]  #Make end times different so they don`t interfere with one another`    
+    firstHoursCD4RR = [6, 14, 22]
     # TIMES ELCV
     lunchELCV = ["12:30", "20:00", "04:15"] 
     breakELCV = ["08:30","17:00","01:15"]   # NO night shifts, so the timing there is not important
@@ -39,10 +44,10 @@ if __name__ == "__main__": #this is necessary to make sure the thing exists
     firstHoursP = [6, 14, 22]
 
 
-    lunchArrays =[lunchJLLong, lunchCD4,lunchELCV]
-    breakArrays = [breakJLLong, breakCD4,breakELCV ]
-    endTimeArrays = [endTimeJLLong, endTimeCD4,endTimeELCV]
-    firstHourArrays = [firstHoursJLLong, firstHoursCD4, firstHoursELCV]
+    lunchArrays =[lunchJLLong, lunchCD4FR,lunchELCV,lunchCD4RR]
+    breakArrays = [breakJLLong, breakCD4FR,breakELCV,breakCD4RR ]
+    endTimeArrays = [endTimeJLLong, endTimeCD4FR,endTimeELCV,endTimeCD4RR]
+    firstHourArrays = [firstHoursJLLong, firstHoursCD4FR, firstHoursELCV,firstHoursCD4RR]
 
     # ALternative arrays  # Arrays for alternative monitoring process
     

@@ -7,7 +7,7 @@ import time
 # Initialising station  
 
 
-JLLong = station("CD4FR")
+JLLong = station("CD4RR")
 JLLongIpAdd = JLLong.selectIP()
 
 

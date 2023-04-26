@@ -69,6 +69,15 @@
                     "Production_Counter": ["SHIFT_PRODUCTION_COUNT"]
                 }
         },
+        {
+            "Station_Name": "CD4RR",
+            "Station_IPadd": "10.10.15.12",
+            "Tag_Name": 
+                {
+                    "One_Part_Trigger":["ONE_PART"],
+                    "Production_Counter": ["SHIFT_PRODUCTION_COUNTER"]
+                }
+        },
 
         {
             "Station_Name": "OP100",
