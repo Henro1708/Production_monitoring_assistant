@@ -7,7 +7,7 @@ import time
 # Initialising station  
 
 
-JLLong = station("P1")
+JLLong = station("CD4FR")
 JLLongIpAdd = JLLong.selectIP()
 
 
@@ -27,7 +27,7 @@ while True:
 
     #print("START MONITORING - JLLong")
     
-    #print(bool(JLLong.onePart()[0][3]))
+    print(bool(JLLong.onePart()[0][3]))
         
     print(JLLong.prodCounter()[0][3])
     #print(JLLong.prodHourCounter())

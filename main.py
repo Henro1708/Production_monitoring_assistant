@@ -107,7 +107,7 @@ def inFirstHour(hour, hourArr):  # True when we are at the beginning of a shift
     elif int(hour) == hourArr[2]:
         return True
     else: 
-        return True #CHANGE   
+        return False    
     
 def breakTime(timee,breakPeriod,lunchTime):  #called timee so it doesn't get messed up with the library
     if timee == breakPeriod:
@@ -196,7 +196,6 @@ def getCycleTime(targetstat):
         index = findStation(sht,targetstat)
         CYCLETIME = sht['G{}'.format(index)].value  # sec/part decided on the excel file 
 
-        wb.save(r"workingTable\shifts_table.xlsx")
         wb.close()
     
     return CYCLETIME
@@ -214,7 +213,7 @@ def excelWrite(shift, targetstat, shiftLength, time_awarded, nOfParts, nOfMicro,
 
 
             
-        wb = xw.Book(r"workingTable\shifts_table.xlsx") #opens the workbook on excel
+        wb = xw.Book(r"workingTable\shifts_table.xlsx", read_only= False) #opens the workbook on excel
 
 
         if weekDay == 0: # finds out which day of the week it is and opens the correct sheet
@@ -343,10 +342,12 @@ def main(targetstat, endArr, breakArr, lunchArr,hourArr): #parameters are statio
                         
 
             now = datetime.now()
-        print("END OF SHIFT")
+        print("END OF SHIFT "+ str(targetstat))
         # END OF SHIFT HERE #### END OF SHIFT HERE #### END OF SHIFT HERE #### END OF SHIFT HERE #### END OF SHIFT HERE #### END OF SHIFT HERE ###
         
         nOfParts = targetStation.prodCounter()[0][3]
+        if nOfParts == None:
+            nOfParts = 0
         time_awarded = nOfParts * CYCLETIME  #How much time was actually produced on this shift
         
         

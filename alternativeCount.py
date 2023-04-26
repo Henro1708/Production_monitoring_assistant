@@ -130,7 +130,7 @@ def inFirstHour(hour, hourArr):  # True when we are at the beginning of a shift
     elif int(hour) == hourArr[2]:
         return True
     else: 
-        return True #CHANGE    
+        return False  
 
 
 
@@ -153,7 +153,7 @@ def excelWrite(shift, targetstat, shiftLength):
 
 
 
-        wb = xw.Book(r"workingTable\shifts_table.xlsx") #opens the workbook on excel
+        wb = xw.Book(r"workingTable\shifts_table.xlsx", read_only=False) #opens the workbook on excel
 
 
         if weekDay == 0: # finds out which day of the week it is and opens the correct sheet

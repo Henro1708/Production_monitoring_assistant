@@ -57,7 +57,8 @@ def sendEmail():
 
         # terminate the session
         server.quit()
-
+        
+        time.sleep(20)
         now = datetime.now()
         weekDay = now.date().weekday()
         if timeNow.strftime("%H") == "15" and weekDay == 0:
