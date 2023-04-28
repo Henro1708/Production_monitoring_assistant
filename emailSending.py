@@ -22,7 +22,7 @@ def sendEmail():
 
         # create message object instance
         msg = MIMEMultipart()
-        to_list = ["henrique.rodriques@martinrea.com", "henriqueengelke@gmail.com"]  # ADD BRIAN AND SHUBHAM LATER
+        to_list = ["shubham.savani@martinrea.com", "brian.rankin@martinrea.com"]  # ADD BRIAN AND SHUBHAM LATER
         # setup the parameters of the message
         password = "hiqrzmqfjltittct"   # VERY SECURE
         msg['From'] = "shiftreportshydroform@gmail.com"
