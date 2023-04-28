@@ -16,8 +16,21 @@ from openpyxl import Workbook
 import psycopg2
 import xlwings as xw
 
-i = 6
-if i ==None:
-    i=0
-print(int(i))
-print("DONE")
+def addNum(num):
+    res = 0
+    numStr = str(num)
+    for i in numStr:
+        res += int(i)
+    
+    return res
+
+num = 245
+
+    
+numStr = str(num)
+
+print(len(numStr))
+    # num2 = addNum(num)
+    # numStr = str(num2)
+
+
